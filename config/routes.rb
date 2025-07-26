@@ -1,6 +1,15 @@
 Rails.application.routes.draw do
   root "pages#index"
   devise_for :users
+
+  # Authenticated user routes
+  authenticated :user do
+    root "dashboard#index", as: :authenticated_root
+  end
+
+  get "dashboard", to: "dashboard#index"
+  resources :weight_entries, except: [ :index ]
+
   get "pages/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

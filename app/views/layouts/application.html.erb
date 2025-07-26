@@ -24,8 +24,27 @@
 
   <body class="bg-gray-50 min-h-screen">
     
+    <!-- Navigation Header -->
     <% if user_signed_in? %>
-      <%= "Welcome, #{current_user.email}" %>
+      <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16">
+            <div class="flex items-center">
+              <%= link_to dashboard_path, class: "flex-shrink-0 flex items-center" do %>
+                <h1 class="text-xl font-bold text-gray-900">ThreeWeigh</h1>
+              <% end %>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+              <span class="text-sm text-gray-700">Welcome, <%= current_user.email.split('@').first.capitalize %></span>
+              <%= link_to "Sign Out", destroy_user_session_path, 
+                  method: :delete,
+                  data: { confirm: "Are you sure?" },
+                  class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            </div>
+          </div>
+        </div>
+      </nav>
     <% end %>
 
     <!-- Flash Messages -->
@@ -41,7 +60,7 @@
       </div>
     <% end %>
 
-    <main class="container mx-auto mt-8 px-5 flex justify-center">
+    <main class="<%= user_signed_in? ? 'container mx-auto mt-8 px-5' : 'container mx-auto mt-8 px-5 flex justify-center' %>">
       <%= yield %>
     </main>
   </body>
