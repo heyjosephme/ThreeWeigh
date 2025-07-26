@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root "pages#index"
+  devise_for :users
   get "pages/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
