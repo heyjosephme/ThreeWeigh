@@ -36,7 +36,17 @@ class WeightEntriesController < ApplicationController
 
   def destroy
     @weight_entry.destroy
-    redirect_to dashboard_path, notice: "Weight entry deleted successfully!"
+
+    respond_to do |format|
+      format.html { redirect_to dashboard_path, notice: "Weight entry deleted successfully!" }
+      format.turbo_stream {
+        flash.now[:notice] = "Weight entry deleted successfully!"
+        render turbo_stream: [
+          turbo_stream.remove("weight-entry-#{@weight_entry.id}"),
+          turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
+        ]
+      }
+    end
   end
 
   private
