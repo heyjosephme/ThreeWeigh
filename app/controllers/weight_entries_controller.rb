@@ -28,9 +28,24 @@ class WeightEntriesController < ApplicationController
 
   def update
     if @weight_entry.update(weight_entry_params)
-      redirect_to dashboard_path, notice: "Weight entry updated successfully!"
+      respond_to do |format|
+        format.html { redirect_to weight_entries_path, notice: "Weight entry updated successfully!" }
+        format.turbo_stream {
+          flash.now[:notice] = "Weight entry updated successfully!"
+          render turbo_stream: [
+            turbo_stream.replace("weight-entry-#{@weight_entry.id}", partial: "weight_entry_row", locals: { weight_entry: @weight_entry }),
+            turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
+          ]
+        }
+      end
     else
-      redirect_to dashboard_path, alert: @weight_entry.errors.full_messages.join(", ")
+      respond_to do |format|
+        format.html { redirect_to weight_entries_path, alert: @weight_entry.errors.full_messages.join(", ") }
+        format.turbo_stream {
+          flash.now[:alert] = @weight_entry.errors.full_messages.join(", ")
+          render turbo_stream: turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
+        }
+      end
     end
   end
 
