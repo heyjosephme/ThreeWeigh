@@ -25,16 +25,9 @@ default: &default
 
 development:
   <<: *default
-  database: three_weigh_development
-
-  # The specified database role being used to connect to PostgreSQL.
-  # To create additional roles in PostgreSQL see `$ createuser --help`.
-  # When left blank, PostgreSQL will use the default role. This is
-  # the same name as the operating system user running Rails.
-  #username: three_weigh
-
-  # The password associated with the PostgreSQL role (username).
-  #password:
+  database: <%= ENV['POSTGRES_DB'] || 'three_weigh_development' %>
+  username: <%= ENV['POSTGRES_USER'] || 'postgres' %>
+  password: <%= ENV['POSTGRES_PASSWORD'] || 'mysecretpassword' %>
 
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
@@ -59,7 +52,9 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: three_weigh_test
+  database: <%= ENV['POSTGRES_DB']&.sub('development', 'test') || 'three_weigh_test' %>
+  username: <%= ENV['POSTGRES_USER'] || 'postgres' %>
+  password: <%= ENV['POSTGRES_PASSWORD'] || 'mysecretpassword' %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

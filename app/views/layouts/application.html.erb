@@ -40,6 +40,9 @@
               <%= link_to weight_entries_path, class: "text-sm text-gray-600 hover:text-gray-900" do %>
                 Weight Entries
               <% end %>
+              <%= link_to fasting_entries_path, class: "text-sm text-gray-600 hover:text-gray-900" do %>
+                Fasting
+              <% end %>
               <span class="text-sm text-gray-700">Welcome, <%= current_user.email.split('@').first.capitalize %></span>
               <%= link_to "Sign Out", destroy_user_session_path, 
                   method: :delete,

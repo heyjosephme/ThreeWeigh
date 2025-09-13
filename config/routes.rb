@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  resources :fasting_entries do
+    member do
+      patch :complete
+      patch :break
+    end
+    collection do
+      post :start_fast
+    end
+  end
   root "pages#index"
   devise_for :users
 
