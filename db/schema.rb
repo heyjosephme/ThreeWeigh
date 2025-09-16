@@ -11,14 +11,11 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.0].define(version: 2025_09_13_031201) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
   create_table "fasting_entries", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.datetime "start_time", null: false
     t.datetime "end_time"
-    t.integer "planned_duration", comment: "Planned duration in minutes"
+    t.integer "planned_duration"
     t.string "status", default: "active"
     t.text "notes"
     t.datetime "created_at", null: false
@@ -41,7 +38,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_13_031201) do
   end
 
   create_table "weight_entries", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.decimal "weight"
     t.date "date"
     t.text "notes"
