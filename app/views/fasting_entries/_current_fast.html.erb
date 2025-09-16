@@ -1,5 +1,5 @@
 <% if current_fast %>
-  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6"
+  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6 transition-all duration-300 ease-in-out transform"
        data-controller="fasting-timer"
        data-fasting-timer-start-time-value="<%= current_fast.start_time.iso8601 %>"
        data-fasting-timer-planned-duration-value="<%= current_fast.planned_duration %>"
@@ -15,16 +15,29 @@
       </div>
       
       <div class="flex space-x-2">
-        <%= link_to complete_fasting_entry_path(current_fast),
-            data: {
-              "turbo-method": "patch",
-              "turbo-confirm": "Congratulations! Mark this fast as completed?"
-            },
-            class: "inline-flex items-center px-3 py-2 border border-green-300 shadow-sm text-sm font-medium rounded text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          Complete Fast
+        <% goal_reached = current_fast.progress_percentage >= 100 %>
+
+        <% if goal_reached %>
+          <%= link_to complete_fasting_entry_path(current_fast),
+              data: {
+                "turbo-method": "patch",
+                "turbo-confirm": "Congratulations! Mark this fast as completed?"
+              },
+              class: "inline-flex items-center px-3 py-2 border border-green-300 shadow-sm text-sm font-medium rounded text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Complete Fast
+          <% end %>
+        <% else %>
+          <button disabled
+                  class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-400 bg-gray-50 cursor-not-allowed opacity-50"
+                  title="Complete your fasting goal first (#{current_fast.time_remaining_text.downcase})">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Complete Fast
+          </button>
         <% end %>
         
         <%= link_to break_fasting_entry_path(current_fast),
@@ -93,7 +106,7 @@
     </div>
   </div>
 <% else %>
-  <div class="bg-gray-50 rounded-lg border border-gray-200 p-6 text-center">
+  <div class="bg-gray-50 rounded-lg border border-gray-200 p-6 text-center transition-all duration-300 ease-in-out transform">
     <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
     </svg>

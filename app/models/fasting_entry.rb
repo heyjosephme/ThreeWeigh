@@ -3,29 +3,29 @@ class FastingEntry < ApplicationRecord
 
   # Status enum
   STATUSES = %w[active completed broken].freeze
-  
+
   validates :start_time, presence: true
   validates :status, presence: true, inclusion: { in: STATUSES }
   validates :planned_duration, presence: true, numericality: { greater_than: 0 }
-  
+
   # Scopes
   scope :recent, -> { order(start_time: :desc) }
-  scope :active, -> { where(status: 'active') }
-  scope :completed, -> { where(status: 'completed') }
-  scope :broken, -> { where(status: 'broken') }
+  scope :active, -> { where(status: "active") }
+  scope :completed, -> { where(status: "completed") }
+  scope :broken, -> { where(status: "broken") }
   scope :for_period, ->(start_date, end_date) { where(start_time: start_date.beginning_of_day..end_date.end_of_day) }
 
   # Instance methods
   def active?
-    status == 'active'
+    status == "active"
   end
 
   def completed?
-    status == 'completed'
+    status == "completed"
   end
 
   def broken?
-    status == 'broken'
+    status == "broken"
   end
 
   def duration_minutes
@@ -53,23 +53,23 @@ class FastingEntry < ApplicationRecord
 
   def progress_percentage
     return 0 unless planned_duration&.positive?
-    [(current_duration_minutes.to_f / planned_duration * 100).round(1), 100].min
+    [ (current_duration_minutes.to_f / planned_duration * 100).round(1), 100 ].min
   end
 
   def remaining_minutes
     return 0 unless planned_duration && active?
-    [planned_duration - current_duration_minutes, 0].max
+    [ planned_duration - current_duration_minutes, 0 ].max
   end
 
   def time_remaining_text
     return "Completed" unless active?
-    
+
     remaining = remaining_minutes
     return "Goal reached!" if remaining <= 0
-    
+
     hours = remaining / 60
     minutes = remaining % 60
-    
+
     if hours > 0
       "#{hours}h #{minutes}m remaining"
     else
@@ -81,7 +81,7 @@ class FastingEntry < ApplicationRecord
     minutes = current_duration_minutes
     hours = minutes / 60
     mins = minutes % 60
-    
+
     if hours > 0
       "#{hours}h #{mins}m"
     else
@@ -100,23 +100,23 @@ class FastingEntry < ApplicationRecord
 
   def self.start_fast_with_time!(user, planned_duration_minutes, start_time, notes = nil)
     # End any currently active fasts
-    user.fasting_entries.active.update_all(status: 'broken', end_time: Time.current)
+    user.fasting_entries.active.update_all(status: "broken", end_time: Time.current)
 
     # Create new fast
     create!(
       user: user,
       start_time: start_time,
       planned_duration: planned_duration_minutes,
-      status: 'active',
+      status: "active",
       notes: notes
     )
   end
 
   def complete!
-    update!(status: 'completed', end_time: Time.current)
+    update!(status: "completed", end_time: Time.current)
   end
 
   def break!
-    update!(status: 'broken', end_time: Time.current)
+    update!(status: "broken", end_time: Time.current)
   end
 end

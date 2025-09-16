@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   end
 
   get "dashboard", to: "dashboard#index"
+  post "set_timezone", to: "application#set_timezone"
   resources :weight_entries
 
   get "pages/index"

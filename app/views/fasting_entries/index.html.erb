@@ -23,6 +23,7 @@
   </div>
 
   <!-- Quick Start Fast -->
+  <!-- TODO: better UI for time? progress bar vs clock ?-->
   <% unless @current_fast %>
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Start a New Fast</h2>
@@ -97,87 +98,8 @@
   <% end %>
 
   <!-- Stats Summary -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Fasts</dt>
-              <dd class="text-lg font-medium text-gray-900"><%= @fasting_entries.count %></dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Completed</dt>
-              <dd class="text-lg font-medium text-gray-900"><%= @fasting_entries.completed.count %></dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Current Streak</dt>
-              <dd class="text-lg font-medium text-gray-900"><%= current_user.fasting_streak %></dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <% if @fasting_entries.completed.any? %>
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4"></path>
-              </svg>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Avg Duration</dt>
-                <dd class="text-lg font-medium text-gray-900">
-                  <% avg_duration = @fasting_entries.completed.average(:planned_duration) %>
-                  <% if avg_duration %>
-                    <%= "#{(avg_duration / 60.0).round(1)}h" %>
-                  <% else %>
-                    0h
-                  <% end %>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
+  <div id="stats-summary" class="mb-8">
+    <%= render 'stats_summary', fasting_entries: @fasting_entries, current_user: current_user %>
   </div>
 
   <!-- Fasting History -->
@@ -185,21 +107,9 @@
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Fasting History</h3>
       
-      <% if @fasting_entries.any? %>
-        <ul class="divide-y divide-gray-200" id="fasting-entries-list">
-          <% @fasting_entries.each do |fasting_entry| %>
-            <%= render 'fasting_entry_row', fasting_entry: fasting_entry %>
-          <% end %>
-        </ul>
-      <% else %>
-        <div class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No fasting entries</h3>
-          <p class="mt-1 text-sm text-gray-500">Get started with your first fast above.</p>
-        </div>
-      <% end %>
+      <div id="fasting-entries-list">
+        <%= render 'fasting_entries_list', fasting_entries: @fasting_entries %>
+      </div>
     </div>
   </div>
 </div>

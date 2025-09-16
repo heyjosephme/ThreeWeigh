@@ -6,13 +6,19 @@ export default class extends Controller {
 
   connect() {
     console.log("FastingFormController connected");
+    console.log("Start time target:", this.hasStartTimeTarget);
+    console.log("Presets target:", this.hasPresetsTarget);
   }
 
   setTime(event) {
+    console.log("setTime called", event.target.dataset.time);
     const timeString = event.target.dataset.time;
     if (timeString && this.hasStartTimeTarget) {
       this.startTimeTarget.value = timeString;
       this.highlightButton(event.target);
+      console.log("Time set to:", timeString);
+    } else {
+      console.log("Missing timeString or startTime target");
     }
   }
 

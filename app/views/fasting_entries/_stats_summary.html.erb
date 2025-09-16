@@ -1,0 +1,82 @@
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+  <div class="bg-white overflow-hidden shadow rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105">
+    <div class="p-5">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-5 w-0 flex-1">
+          <dl>
+            <dt class="text-sm font-medium text-gray-500 truncate">Total Fasts</dt>
+            <dd class="text-lg font-medium text-gray-900"><%= fasting_entries.count %></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white overflow-hidden shadow rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105">
+    <div class="p-5">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-5 w-0 flex-1">
+          <dl>
+            <dt class="text-sm font-medium text-gray-500 truncate">Completed</dt>
+            <dd class="text-lg font-medium text-gray-900"><%= fasting_entries.completed.count %></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white overflow-hidden shadow rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105">
+    <div class="p-5">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <div class="ml-5 w-0 flex-1">
+          <dl>
+            <dt class="text-sm font-medium text-gray-500 truncate">Current Streak</dt>
+            <dd class="text-lg font-medium text-gray-900"><%= current_user.fasting_streak %></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if fasting_entries.completed.any? %>
+    <div class="bg-white overflow-hidden shadow rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Avg Duration</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <% avg_duration = fasting_entries.completed.average(:planned_duration) %>
+                <% if avg_duration %>
+                  <%= "#{(avg_duration / 60.0).round(1)}h" %>
+                <% else %>
+                  0h
+                <% end %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

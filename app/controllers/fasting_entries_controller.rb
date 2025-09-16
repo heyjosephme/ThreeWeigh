@@ -80,13 +80,20 @@ class FastingEntriesController < ApplicationController
 
   def complete
     @fasting_entry.complete!
-    
+
     respond_to do |format|
       format.html { redirect_to fasting_entries_path, notice: "Congratulations! Fast completed successfully!" }
       format.turbo_stream {
         flash.now[:notice] = "Congratulations! Fast completed successfully!"
+
+        # Reload data for updated views
+        @fasting_entries = current_user.fasting_entries.recent.includes(:user)
+        @current_fast = current_user.current_fast
+
         render turbo_stream: [
-          turbo_stream.replace("current-fast", partial: "current_fast", locals: { current_fast: current_user.current_fast }),
+          turbo_stream.replace("current-fast", partial: "current_fast", locals: { current_fast: @current_fast }),
+          turbo_stream.replace("fasting-entries-list", partial: "fasting_entries_list", locals: { fasting_entries: @fasting_entries }),
+          turbo_stream.replace("stats-summary", partial: "stats_summary", locals: { fasting_entries: @fasting_entries, current_user: current_user }),
           turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
         ]
       }
@@ -95,13 +102,20 @@ class FastingEntriesController < ApplicationController
 
   def break
     @fasting_entry.break!
-    
+
     respond_to do |format|
       format.html { redirect_to fasting_entries_path, notice: "Fast ended. Don't worry, you'll do better next time!" }
       format.turbo_stream {
         flash.now[:notice] = "Fast ended. Don't worry, you'll do better next time!"
+
+        # Reload data for updated views
+        @fasting_entries = current_user.fasting_entries.recent.includes(:user)
+        @current_fast = current_user.current_fast
+
         render turbo_stream: [
-          turbo_stream.replace("current-fast", partial: "current_fast", locals: { current_fast: current_user.current_fast }),
+          turbo_stream.replace("current-fast", partial: "current_fast", locals: { current_fast: @current_fast }),
+          turbo_stream.replace("fasting-entries-list", partial: "fasting_entries_list", locals: { fasting_entries: @fasting_entries }),
+          turbo_stream.replace("stats-summary", partial: "stats_summary", locals: { fasting_entries: @fasting_entries, current_user: current_user }),
           turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
         ]
       }
