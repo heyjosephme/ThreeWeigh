@@ -67,10 +67,11 @@ class FastingEntriesController < ApplicationController
 
   def start_fast
     planned_duration = params[:planned_duration]&.to_i || 16 * 60 # Default 16 hours
+    start_time = params[:start_time].present? ? Time.parse(params[:start_time]) : Time.current
     notes = params[:notes]
 
     begin
-      @fasting_entry = FastingEntry.start_fast!(current_user, planned_duration, notes)
+      @fasting_entry = FastingEntry.start_fast_with_time!(current_user, planned_duration, start_time, notes)
       redirect_to fasting_entries_path, notice: "Fast started successfully! Good luck!"
     rescue => e
       redirect_to fasting_entries_path, alert: "Failed to start fast: #{e.message}"

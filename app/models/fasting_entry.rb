@@ -95,13 +95,17 @@ class FastingEntry < ApplicationRecord
   end
 
   def self.start_fast!(user, planned_duration_minutes, notes = nil)
+    start_fast_with_time!(user, planned_duration_minutes, Time.current, notes)
+  end
+
+  def self.start_fast_with_time!(user, planned_duration_minutes, start_time, notes = nil)
     # End any currently active fasts
     user.fasting_entries.active.update_all(status: 'broken', end_time: Time.current)
-    
+
     # Create new fast
     create!(
       user: user,
-      start_time: Time.current,
+      start_time: start_time,
       planned_duration: planned_duration_minutes,
       status: 'active',
       notes: notes
