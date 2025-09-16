@@ -15,11 +15,10 @@
       </div>
       
       <div class="flex space-x-2">
-        <%= link_to complete_fasting_entry_path(current_fast), 
-            method: :patch,
-            data: { 
-              confirm: "Congratulations! Mark this fast as completed?",
-              turbo_method: :patch 
+        <%= link_to complete_fasting_entry_path(current_fast),
+            data: {
+              "turbo-method": "patch",
+              "turbo-confirm": "Congratulations! Mark this fast as completed?"
             },
             class: "inline-flex items-center px-3 py-2 border border-green-300 shadow-sm text-sm font-medium rounded text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,10 +28,9 @@
         <% end %>
         
         <%= link_to break_fasting_entry_path(current_fast),
-            method: :patch,
-            data: { 
-              confirm: "Are you sure you want to break your fast?",
-              turbo_method: :patch 
+            data: {
+              "turbo-method": "patch",
+              "turbo-confirm": "Are you sure you want to break your fast?"
             },
             class: "inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" do %>
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
