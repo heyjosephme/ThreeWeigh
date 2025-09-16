@@ -8,6 +8,7 @@ class FastingEntriesController < ApplicationController
   end
 
   def show
+    # @fasting_entry is already set by before_action :set_fasting_entry
   end
 
   def new
