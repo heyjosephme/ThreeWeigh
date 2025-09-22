@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :weight_analytics, only: [:index]
   resources :fasting_entries do
     member do
       patch :complete
