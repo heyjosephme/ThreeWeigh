@@ -177,9 +177,84 @@
               </span>
             </div>
           </div>
+
+          <!-- BMI Section -->
+          <% if @analytics_data[:current_bmi] %>
+            <div class="border-t border-gray-200 pt-4 mt-4">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-500">BMI</span>
+                <span class="text-sm font-bold text-gray-900"><%= @analytics_data[:current_bmi] %></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-500">Category</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                             <%= @analytics_data[:bmi_category] == 'normal' ? 'bg-green-100 text-green-800' :
+                                 @analytics_data[:bmi_category] == 'underweight' ? 'bg-blue-100 text-blue-800' :
+                                 'bg-yellow-100 text-yellow-800' %>">
+                  <%= @analytics_data[:bmi_category]&.humanize %>
+                </span>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
+
+    <!-- Goal Progress Section -->
+    <% if @analytics_data[:goal_progress] %>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Goal Progress</h3>
+
+        <%
+          goal_data = @analytics_data[:goal_progress]
+          current_weight = goal_data[:current_weight]
+          goal_weight = goal_data[:goal_weight]
+          progress_percentage = goal_data[:progress_percentage]
+        %>
+
+        <div class="flex justify-between text-sm text-gray-600 mb-2">
+          <span>Progress to Goal</span>
+          <span><%= progress_percentage %>%</span>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+          <div class="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500 ease-out"
+               style="width: <%= progress_percentage %>%"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p class="text-lg font-bold text-gray-900">
+              <%= current_user.unit_system == 'imperial' ? "#{(current_weight * 2.20462).round(1)} lbs" : "#{current_weight} kg" %>
+            </p>
+            <p class="text-xs text-gray-500">Current</p>
+          </div>
+          <div>
+            <% if goal_data[:weight_to_lose] %>
+              <p class="text-lg font-bold text-orange-600">
+                -<%= current_user.unit_system == 'imperial' ? "#{(goal_data[:weight_to_lose] * 2.20462).round(1)} lbs" : "#{goal_data[:weight_to_lose]} kg" %>
+              </p>
+              <p class="text-xs text-gray-500">To Lose</p>
+            <% elsif goal_data[:weight_to_gain] %>
+              <p class="text-lg font-bold text-blue-600">
+                +<%= current_user.unit_system == 'imperial' ? "#{(goal_data[:weight_to_gain] * 2.20462).round(1)} lbs" : "#{goal_data[:weight_to_gain]} kg" %>
+              </p>
+              <p class="text-xs text-gray-500">To Gain</p>
+            <% else %>
+              <p class="text-lg font-bold text-green-600">🎯 0</p>
+              <p class="text-xs text-gray-500">At Goal!</p>
+            <% end %>
+          </div>
+          <div>
+            <p class="text-lg font-bold text-gray-900">
+              <%= current_user.unit_system == 'imperial' ? "#{(goal_weight * 2.20462).round(1)} lbs" : "#{goal_weight} kg" %>
+            </p>
+            <p class="text-xs text-gray-500">Goal</p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 
     <!-- Insights Section -->
     <% if @analytics_data[:best_week] || @analytics_data[:worst_week] %>

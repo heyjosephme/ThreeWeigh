@@ -1,0 +1,220 @@
+<div class="max-w-2xl mx-auto">
+  <!-- Header -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Edit Profile</h1>
+          <p class="text-sm text-gray-500 mt-1">Update your personal information and preferences</p>
+        </div>
+        <%= link_to profile_path, class: "text-gray-400 hover:text-gray-600" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <%= form_with model: @user, url: profile_path, method: :patch, local: true, class: "space-y-6" do |form| %>
+      <% if @user.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">Please fix the following errors:</h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc list-inside space-y-1">
+                  <% @user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Unit System -->
+      <div>
+        <%= form.label :unit_system, "Unit System", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <div class="grid grid-cols-2 gap-3">
+          <% User::UNIT_SYSTEMS.each do |unit| %>
+            <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none <%= @user.unit_system == unit ? 'border-blue-500 bg-blue-50' : 'border-gray-300' %>">
+              <%= form.radio_button :unit_system, unit, class: "sr-only" %>
+              <div class="flex flex-1">
+                <div class="flex flex-col">
+                  <span class="block text-sm font-medium text-gray-900">
+                    <%= unit.humanize %>
+                  </span>
+                  <span class="mt-1 flex items-center text-sm text-gray-500">
+                    <%= unit == 'metric' ? 'kg, cm' : 'lbs, ft-in' %>
+                  </span>
+                </div>
+              </div>
+              <% if @user.unit_system == unit %>
+                <svg class="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+              <% end %>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Height -->
+      <div>
+        <%= form.label :height, "Height", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <div class="relative">
+          <%= form.number_field :height,
+              step: 0.1,
+              placeholder: @user.unit_system == 'imperial' ? "70 (inches)" : "175 (cm)",
+              class: "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <span class="text-gray-500 sm:text-sm">
+              <%= @user.unit_system == 'imperial' ? 'inches' : 'cm' %>
+            </span>
+          </div>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">
+          <%= @user.unit_system == 'imperial' ? 'Enter height in inches (e.g., 70 for 5\'10")' : 'Enter height in centimeters' %>
+        </p>
+      </div>
+
+      <!-- Age -->
+      <div>
+        <%= form.label :age, "Age", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.number_field :age,
+            min: 1, max: 150,
+            placeholder: "30",
+            class: "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+
+      <!-- Gender -->
+      <div>
+        <%= form.label :gender, "Gender", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.select :gender,
+            options_for_select([['Select gender', '']] + User::GENDERS.map { |g| [g.humanize, g] }, @user.gender),
+            {},
+            { class: "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+      </div>
+
+      <!-- Goal Weight -->
+      <div>
+        <%= form.label :goal_weight, "Goal Weight", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <div class="relative">
+          <%= form.number_field :goal_weight,
+              step: 0.1,
+              placeholder: @user.unit_system == 'imperial' ? "150 (lbs)" : "70 (kg)",
+              class: "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <span class="text-gray-500 sm:text-sm">
+              <%= @user.unit_system == 'imperial' ? 'lbs' : 'kg' %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Level -->
+      <div>
+        <%= form.label :activity_level, "Activity Level", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.select :activity_level,
+            options_for_select([['Select activity level', '']] + User::ACTIVITY_LEVELS.map { |a| [a.humanize.gsub('_', ' '), a] }, @user.activity_level),
+            {},
+            { class: "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+        <p class="mt-1 text-sm text-gray-500">
+          This helps provide more accurate health recommendations
+        </p>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+        <%= link_to profile_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          Cancel
+        <% end %>
+
+        <%= form.submit "Save Profile", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Help Text -->
+  <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-blue-800">Why we ask for this information</h3>
+        <div class="mt-2 text-sm text-blue-700">
+          <ul class="list-disc list-inside space-y-1">
+            <li><strong>Height & Current Weight:</strong> Calculate BMI and healthy weight ranges</li>
+            <li><strong>Goal Weight:</strong> Track progress and provide timeline estimates</li>
+            <li><strong>Age & Gender:</strong> Provide age and gender-specific health insights</li>
+            <li><strong>Activity Level:</strong> Future calorie and exercise recommendations</li>
+          </ul>
+          <p class="mt-2">All fields are optional, but completing your profile unlocks enhanced analytics and personalized insights.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Handle unit system change
+  document.addEventListener('DOMContentLoaded', function() {
+    const unitSystemInputs = document.querySelectorAll('input[name="user[unit_system]"]');
+    const heightField = document.querySelector('input[name="user[height]"]');
+    const heightUnit = document.querySelector('.absolute .text-gray-500');
+    const heightHelp = heightField?.parentElement?.nextElementSibling;
+    const goalWeightField = document.querySelector('input[name="user[goal_weight]"]');
+    const goalWeightUnit = goalWeightField?.parentElement?.querySelector('.absolute .text-gray-500');
+
+    unitSystemInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        const isImperial = this.value === 'imperial';
+
+        // Update height field
+        if (heightField) {
+          heightField.placeholder = isImperial ? "70 (inches)" : "175 (cm)";
+        }
+        if (heightUnit) {
+          heightUnit.textContent = isImperial ? 'inches' : 'cm';
+        }
+        if (heightHelp) {
+          heightHelp.textContent = isImperial ?
+            'Enter height in inches (e.g., 70 for 5\'10")' :
+            'Enter height in centimeters';
+        }
+
+        // Update goal weight field
+        if (goalWeightField) {
+          goalWeightField.placeholder = isImperial ? "150 (lbs)" : "70 (kg)";
+        }
+        if (goalWeightUnit) {
+          goalWeightUnit.textContent = isImperial ? 'lbs' : 'kg';
+        }
+
+        // Update radio button styling
+        unitSystemInputs.forEach(otherInput => {
+          const label = otherInput.closest('label');
+          if (otherInput === this) {
+            label.classList.add('border-blue-500', 'bg-blue-50');
+            label.classList.remove('border-gray-300');
+          } else {
+            label.classList.remove('border-blue-500', 'bg-blue-50');
+            label.classList.add('border-gray-300');
+          }
+        });
+      });
+    });
+  });
+</script>

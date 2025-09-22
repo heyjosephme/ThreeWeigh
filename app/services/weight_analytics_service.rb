@@ -36,9 +36,9 @@ class WeightAnalyticsService
       worst_week: worst_week,
       consistency_score: consistency_score,
 
-      # Goal tracking (placeholder for future feature)
-      goal_weight: nil,
-      goal_progress: nil
+      # Goal tracking
+      goal_weight: goal_weight,
+      goal_progress: goal_progress
     }
   end
 
@@ -121,26 +121,52 @@ class WeightAnalyticsService
   end
 
   def current_bmi
-    return nil unless current_weight && @user.respond_to?(:height) && @user.height.present?
+    return nil unless current_weight && @user.height.present?
 
-    height_in_meters = @user.height / 100.0 # assuming height is stored in cm
-    bmi = current_weight / (height_in_meters ** 2)
-    bmi.round(1)
+    # Use User model's BMI calculation which handles unit conversions
+    @user.bmi
   end
 
   def bmi_category
     return nil unless current_bmi
 
-    case current_bmi
-    when 0..18.5
-      "underweight"
-    when 18.5..25
-      "normal"
-    when 25..30
-      "overweight"
+    @user.bmi_category
+  end
+
+  def goal_weight
+    @user.goal_weight
+  end
+
+  def goal_progress
+    return nil unless goal_weight && current_weight
+
+    starting_weight = @weight_entries.first&.weight || current_weight
+    weight_to_lose = current_weight - goal_weight
+
+    if weight_to_lose > 0
+      # Weight loss goal
+      total_to_lose = starting_weight - goal_weight
+      already_lost = starting_weight - current_weight
+      progress_percentage = total_to_lose > 0 ? [[already_lost / total_to_lose * 100, 100].min, 0].max : 0
+    elsif weight_to_lose < 0
+      # Weight gain goal
+      total_to_gain = goal_weight - starting_weight
+      already_gained = current_weight - starting_weight
+      progress_percentage = total_to_gain > 0 ? [[already_gained / total_to_gain * 100, 100].min, 0].max : 0
     else
-      "obese"
+      # At goal weight
+      progress_percentage = 100
     end
+
+    {
+      current_weight: current_weight,
+      goal_weight: goal_weight,
+      starting_weight: starting_weight,
+      progress_percentage: progress_percentage.round(1),
+      weight_to_lose: weight_to_lose > 0 ? weight_to_lose.round(1) : nil,
+      weight_to_gain: weight_to_lose < 0 ? weight_to_lose.abs.round(1) : nil,
+      at_goal: weight_to_lose.abs < 0.1
+    }
   end
 
   def chart_data
@@ -154,13 +180,16 @@ class WeightAnalyticsService
   end
 
   def trend_data
-    return [] if @weight_entries.count < 7
+    return [] if @weight_entries.count < 3
 
-    # Calculate 7-day moving average
+    # Calculate moving average (adaptive window size)
+    window_size = [@weight_entries.count >= 7 ? 7 : 3, @weight_entries.count].min
     trend_points = []
+
     @weight_entries.each_with_index do |entry, index|
-      if index >= 6 # We have at least 7 data points
-        recent_weights = @weight_entries[index-6..index].pluck(:weight)
+      if index >= window_size - 1 # We have enough data points for the window
+        start_index = [index - window_size + 1, 0].max
+        recent_weights = @weight_entries[start_index..index].pluck(:weight)
         avg_weight = recent_weights.sum / recent_weights.size.to_f
 
         trend_points << {

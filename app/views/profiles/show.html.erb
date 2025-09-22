@@ -1,0 +1,227 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">My Profile</h1>
+          <p class="text-sm text-gray-500 mt-1">Manage your personal information and preferences</p>
+        </div>
+        <%= link_to edit_profile_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Edit Profile
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Completion -->
+  <% unless @user.profile_complete? %>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">Complete Your Profile</h3>
+          <div class="mt-2 text-sm text-yellow-700">
+            <p>Your profile is <%= @user.profile_completion_percentage %>% complete. Add height and goal weight to unlock BMI calculations and enhanced analytics.</p>
+          </div>
+          <div class="mt-3">
+            <div class="bg-yellow-200 rounded-full h-2">
+              <div class="bg-yellow-400 h-2 rounded-full transition-all duration-300" style="width: <%= @user.profile_completion_percentage %>%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Basic Information -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+
+      <div class="space-y-4">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-gray-500">Email</span>
+          <span class="text-sm text-gray-900"><%= @user.email %></span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-gray-500">Unit System</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <%= @user.unit_system.humanize %>
+          </span>
+        </div>
+
+        <% if @user.age.present? %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Age</span>
+            <span class="text-sm text-gray-900"><%= @user.age %> years old</span>
+          </div>
+        <% end %>
+
+        <% if @user.gender.present? %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Gender</span>
+            <span class="text-sm text-gray-900"><%= @user.gender.humanize %></span>
+          </div>
+        <% end %>
+
+        <% if @user.activity_level.present? %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Activity Level</span>
+            <span class="text-sm text-gray-900"><%= @user.activity_level.humanize.gsub('_', ' ') %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Health Metrics -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Health Metrics</h3>
+
+      <div class="space-y-4">
+        <% if @user.height.present? %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Height</span>
+            <span class="text-sm text-gray-900"><%= @user.height_in_display_unit %></span>
+          </div>
+        <% else %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Height</span>
+            <span class="text-sm text-gray-400 italic">Not set</span>
+          </div>
+        <% end %>
+
+        <% if @user.goal_weight.present? %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Goal Weight</span>
+            <span class="text-sm text-gray-900"><%= @user.goal_weight_in_display_unit %></span>
+          </div>
+        <% else %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Goal Weight</span>
+            <span class="text-sm text-gray-400 italic">Not set</span>
+          </div>
+        <% end %>
+
+        <% if @user.latest_weight %>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-500">Current Weight</span>
+            <span class="text-sm text-gray-900">
+              <%= @user.unit_system == 'imperial' ? "#{(@user.latest_weight.weight * 2.20462).round(1)} lbs" : "#{@user.latest_weight.weight} kg" %>
+            </span>
+          </div>
+        <% end %>
+
+        <% if @user.bmi.present? %>
+          <div class="border-t border-gray-200 pt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-500">BMI</span>
+              <span class="text-lg font-bold text-gray-900"><%= @user.bmi %></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-gray-500">Category</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                           <%= @user.bmi_category == 'normal' ? 'bg-green-100 text-green-800' :
+                               @user.bmi_category == 'underweight' ? 'bg-blue-100 text-blue-800' :
+                               'bg-yellow-100 text-yellow-800' %>">
+                <%= @user.bmi_category.humanize %>
+              </span>
+            </div>
+          </div>
+        <% else %>
+          <div class="border-t border-gray-200 pt-4">
+            <div class="text-center text-sm text-gray-500">
+              <p>BMI calculation requires height and current weight</p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goal Progress -->
+  <% if @user.goal_weight.present? && @user.latest_weight %>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Goal Progress</h3>
+
+      <%
+        current_weight = @user.latest_weight.weight
+        goal_weight = @user.goal_weight
+        weight_to_lose = current_weight - goal_weight  # Positive = need to lose, Negative = need to gain
+
+        # Calculate progress based on journey from start to goal
+        # We need the starting weight to calculate meaningful progress
+        starting_weight = @user.weight_entries.order(:date).first&.weight || current_weight
+
+        if weight_to_lose > 0
+          # Weight loss goal: progress = (starting_weight - current_weight) / (starting_weight - goal_weight) * 100
+          total_to_lose = starting_weight - goal_weight
+          already_lost = starting_weight - current_weight
+          progress_percentage = total_to_lose > 0 ? [[already_lost / total_to_lose * 100, 100].min, 0].max : 0
+        elsif weight_to_lose < 0
+          # Weight gain goal: progress = (current_weight - starting_weight) / (goal_weight - starting_weight) * 100
+          total_to_gain = goal_weight - starting_weight
+          already_gained = current_weight - starting_weight
+          progress_percentage = total_to_gain > 0 ? [[already_gained / total_to_gain * 100, 100].min, 0].max : 0
+        else
+          # At goal weight
+          progress_percentage = 100
+        end
+      %>
+
+      <div class="flex justify-between text-sm text-gray-600 mb-2">
+        <span>Progress to Goal</span>
+        <span><%= progress_percentage.round(1) %>%</span>
+      </div>
+
+      <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+        <div class="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500 ease-out"
+             style="width: <%= progress_percentage %>%"></div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div>
+          <p class="text-lg font-bold text-gray-900">
+            <%= @user.unit_system == 'imperial' ? "#{(current_weight * 2.20462).round(1)} lbs" : "#{current_weight} kg" %>
+          </p>
+          <p class="text-xs text-gray-500">Current</p>
+        </div>
+        <div>
+          <% if weight_to_lose > 0 %>
+            <!-- Weight loss scenario - show amount to lose -->
+            <p class="text-lg font-bold text-orange-600">
+              -<%= @user.unit_system == 'imperial' ? "#{(weight_to_lose * 2.20462).round(1)} lbs" : "#{weight_to_lose.round(1)} kg" %>
+            </p>
+            <p class="text-xs text-gray-500">To Lose</p>
+          <% elsif weight_to_lose < 0 %>
+            <!-- Weight gain scenario - show amount to gain -->
+            <p class="text-lg font-bold text-blue-600">
+              +<%= @user.unit_system == 'imperial' ? "#{(weight_to_lose.abs * 2.20462).round(1)} lbs" : "#{weight_to_lose.abs.round(1)} kg" %>
+            </p>
+            <p class="text-xs text-gray-500">To Gain</p>
+          <% else %>
+            <!-- At goal weight -->
+            <p class="text-lg font-bold text-green-600">
+              🎯 0
+            </p>
+            <p class="text-xs text-gray-500">At Goal!</p>
+          <% end %>
+        </div>
+        <div>
+          <p class="text-lg font-bold text-gray-900">
+            <%= @user.unit_system == 'imperial' ? "#{(goal_weight * 2.20462).round(1)} lbs" : "#{goal_weight} kg" %>
+          </p>
+          <p class="text-xs text-gray-500">Goal</p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
