@@ -10,13 +10,15 @@ Rails.application.routes.draw do
       post :start_fast
     end
   end
-  root "pages#index"
   devise_for :users
 
-  # Authenticated user routes
+  # Authenticated user routes (must come before general root)
   authenticated :user do
     root "dashboard#index", as: :authenticated_root
   end
+
+  # General root for non-authenticated users
+  root "pages#index"
 
   get "dashboard", to: "dashboard#index"
   post "set_timezone", to: "application#set_timezone"

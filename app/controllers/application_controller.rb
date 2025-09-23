@@ -4,6 +4,20 @@ class ApplicationController < ActionController::Base
 
   before_action :set_time_zone
 
+  # Redirect logged-in users to dashboard instead of landing page
+  def after_sign_in_path_for(resource)
+    dashboard_path
+  end
+
+  # Redirect already signed in users to dashboard without notification
+  def require_no_authentication
+    assert_is_devise_resource!
+    return unless is_navigational_format?
+    return unless authenticated?(resource_name)
+
+    redirect_to dashboard_path
+  end
+
   def set_timezone
     timezone = params[:timezone]
 
