@@ -19,7 +19,7 @@ class WeightEntriesController < ApplicationController
     if @weight_entry.save
       redirect_to dashboard_path, notice: "Weight entry created successfully!"
     else
-      redirect_to dashboard_path, alert: @weight_entry.errors.full_messages.join(", ")
+      render :new, status: :unprocessable_entity
     end
   end
 
