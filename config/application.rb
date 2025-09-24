@@ -27,5 +27,8 @@ module ThreeWeigh
 
     # Ensure services directory is autoloaded
     config.autoload_paths << Rails.root.join("app", "services")
+
+    # Ensure components directory is autoloaded for ViewComponent
+    config.autoload_paths << Rails.root.join("app", "components")
   end
 end

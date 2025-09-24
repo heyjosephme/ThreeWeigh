@@ -1,0 +1,28 @@
+<% if @current_fast %>
+  <!-- Active Fast Button -->
+  <div data-controller="fasting-progress"
+       data-fasting-progress-fasting-entry-id-value="<%= @current_fast.id %>"
+       data-fasting-progress-update-interval-value="30000">
+    <%= link_to fasting_entry_path(@current_fast), class: "flex items-center justify-center w-full px-2 md:px-4 py-2 text-sm font-medium text-orange-600 bg-orange-50 border border-orange-600 rounded-lg hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors relative overflow-hidden" do %>
+      <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span class="hidden md:inline" data-fasting-progress-target="percentage">
+        <% progress_percentage = [@current_fast.progress_percentage, 100].min %>
+        <%= progress_percentage.round %>% Fast
+      </span>
+      <!-- Progress Bar (Mobile) -->
+      <div class="md:hidden absolute bottom-0 left-0 h-1 bg-orange-600 transition-all duration-1000"
+           data-fasting-progress-target="progressBar"
+           style="width: <%= progress_percentage %>%;"></div>
+    <% end %>
+  </div>
+<% else %>
+  <!-- Start Fast Button -->
+  <%= link_to start_fast_fasting_entries_path, data: { "turbo-method": "post" }, class: "flex items-center justify-center w-full px-2 md:px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-600 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+    <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span class="hidden md:inline">Start Fast</span>
+  <% end %>
+<% end %>

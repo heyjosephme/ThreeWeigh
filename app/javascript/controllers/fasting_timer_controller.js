@@ -11,6 +11,7 @@ export default class extends Controller {
 
   connect() {
     console.log("FastingTimerController connected for fast", this.idValue);
+    this.lastElapsedMinutes = -1; // Initialize to force first update
     this.startTimer();
   }
 
@@ -40,15 +41,19 @@ export default class extends Controller {
     const startTime = new Date(this.startTimeValue);
     const elapsedMs = now - startTime;
     const elapsedMinutes = Math.floor(elapsedMs / (1000 * 60));
-    
-    // Update current duration
-    this.updateCurrentDuration(elapsedMinutes);
-    
-    // Update time remaining
-    this.updateTimeRemaining(elapsedMinutes);
-    
-    // Update progress
-    this.updateProgress(elapsedMinutes);
+
+    // Only update if minute has actually changed (performance optimization)
+    if (elapsedMinutes === this.lastElapsedMinutes) {
+      return;
+    }
+    this.lastElapsedMinutes = elapsedMinutes;
+
+    // Batch DOM updates in requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
+      this.updateCurrentDuration(elapsedMinutes);
+      this.updateTimeRemaining(elapsedMinutes);
+      this.updateProgress(elapsedMinutes);
+    });
   }
 
   updateCurrentDuration(elapsedMinutes) {

@@ -1,6 +1,6 @@
 class FastingEntriesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_fasting_entry, only: [:show, :edit, :update, :destroy, :complete, :break]
+  before_action :set_fasting_entry, only: [:show, :edit, :update, :destroy, :complete, :break, :progress]
 
   def index
     @fasting_entries = current_user.fasting_entries.recent.includes(:user)
@@ -9,6 +9,19 @@ class FastingEntriesController < ApplicationController
 
   def show
     # @fasting_entry is already set by before_action :set_fasting_entry
+  end
+
+  def progress
+    respond_to do |format|
+      format.json {
+        render json: {
+          progress_percentage: @fasting_entry.progress_percentage,
+          time_remaining_text: @fasting_entry.time_remaining_text,
+          current_duration_text: @fasting_entry.duration_text,
+          status: @fasting_entry.status
+        }
+      }
+    end
   end
 
   def new
@@ -73,9 +86,26 @@ class FastingEntriesController < ApplicationController
 
     begin
       @fasting_entry = FastingEntry.start_fast_with_time!(current_user, planned_duration, start_time, notes)
-      redirect_to fasting_entries_path, notice: "Fast started successfully! Good luck!"
+      @current_fast = current_user.current_fast
+
+      respond_to do |format|
+        format.html { redirect_to fasting_entries_path, notice: "Fast started successfully! Good luck!" }
+        format.turbo_stream {
+          flash.now[:notice] = "Fast started successfully! Good luck!"
+          render turbo_stream: [
+            turbo_stream.replace("sidebar-start-fast-button", partial: "shared/start_fast_button"),
+            turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
+          ]
+        }
+      end
     rescue => e
-      redirect_to fasting_entries_path, alert: "Failed to start fast: #{e.message}"
+      respond_to do |format|
+        format.html { redirect_to fasting_entries_path, alert: "Failed to start fast: #{e.message}" }
+        format.turbo_stream {
+          flash.now[:alert] = "Failed to start fast: #{e.message}"
+          render turbo_stream: turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
+        }
+      end
     end
   end
 
@@ -95,6 +125,7 @@ class FastingEntriesController < ApplicationController
           turbo_stream.replace("current-fast", partial: "current_fast", locals: { current_fast: @current_fast }),
           turbo_stream.replace("fasting-entries-list", partial: "fasting_entries_list", locals: { fasting_entries: @fasting_entries }),
           turbo_stream.replace("stats-summary", partial: "stats_summary", locals: { fasting_entries: @fasting_entries, current_user: current_user }),
+          turbo_stream.replace("sidebar-start-fast-button", partial: "shared/start_fast_button"),
           turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
         ]
       }
@@ -117,11 +148,13 @@ class FastingEntriesController < ApplicationController
           turbo_stream.replace("current-fast", partial: "current_fast", locals: { current_fast: @current_fast }),
           turbo_stream.replace("fasting-entries-list", partial: "fasting_entries_list", locals: { fasting_entries: @fasting_entries }),
           turbo_stream.replace("stats-summary", partial: "stats_summary", locals: { fasting_entries: @fasting_entries, current_user: current_user }),
+          turbo_stream.replace("sidebar-start-fast-button", partial: "shared/start_fast_button"),
           turbo_stream.replace("flash-messages", partial: "shared/flash_messages")
         ]
       }
     end
   end
+
 
   private
 

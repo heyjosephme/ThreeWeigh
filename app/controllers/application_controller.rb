@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :set_time_zone
+  before_action :set_current_fast, if: :user_signed_in?
 
   # Redirect logged-in users to dashboard instead of landing page
   def after_sign_in_path_for(resource)
@@ -33,5 +34,9 @@ class ApplicationController < ActionController::Base
 
   def set_time_zone
     Time.zone = session[:user_timezone] || 'UTC'
+  end
+
+  def set_current_fast
+    @current_fast = current_user.current_fast if current_user
   end
 end

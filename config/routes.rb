@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     member do
       patch :complete
       patch :break
+      get :progress
     end
     collection do
       post :start_fast

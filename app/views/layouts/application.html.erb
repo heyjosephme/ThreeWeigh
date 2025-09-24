@@ -89,12 +89,9 @@
                 <span class="hidden md:inline">Add Weight</span>
               <% end %>
 
-              <%= link_to start_fast_fasting_entries_path, data: { "turbo-method": "post" }, class: "flex items-center justify-center w-full px-2 md:px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-600 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
-                <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span class="hidden md:inline">Start Fast</span>
-              <% end %>
+              <div id="sidebar-start-fast-button">
+                <%= render "shared/start_fast_button" %>
+              </div>
             </div>
           </nav>
 
@@ -131,6 +128,7 @@
           </main>
         </div>
       </div>
+
     <% else %>
       <!-- Non-authenticated layout -->
       <%= render "shared/flash_messages" %>
