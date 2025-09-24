@@ -6,7 +6,7 @@
   </div>
 
   <!-- Stats Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <!-- Current Weight -->
     <div class="bg-white rounded-lg shadow p-6">
       <div class="flex items-center">
@@ -69,7 +69,147 @@
         </div>
       </div>
     </div>
+
+    <!-- Active Fasting Session -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <% if @current_fast %>
+          <div class="p-3 rounded-full bg-orange-500 bg-opacity-10">
+            <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Current Fast</p>
+            <p class="text-lg font-semibold text-gray-900"><%= @current_fast.duration_text %></p>
+            <p class="text-xs text-gray-500"><%= @current_fast.progress_percentage.round %>% complete</p>
+          </div>
+        <% else %>
+          <div class="p-3 rounded-full bg-gray-500 bg-opacity-10">
+            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Current Fast</p>
+            <p class="text-2xl font-semibold text-gray-900">No active fast</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </div>
+
+  <!-- Fasting Stats Row -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Fasting Streak -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-purple-500 bg-opacity-10">
+          <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Current Streak</p>
+          <p class="text-2xl font-semibold text-gray-900">
+            <%= @fasting_stats[:current_streak] %> fast<%= @fasting_stats[:current_streak] != 1 ? 's' : '' %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Fasts -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-indigo-500 bg-opacity-10">
+          <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Total Fasts</p>
+          <p class="text-2xl font-semibold text-gray-900"><%= @fasting_stats[:total_fasts] %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completion Rate -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-emerald-500 bg-opacity-10">
+          <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Completion Rate</p>
+          <p class="text-2xl font-semibold text-gray-900"><%= @fasting_stats[:completion_rate] %>%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Fasting Activity -->
+  <% if @fasting_stats[:recent_fasts].any? %>
+    <div class="bg-white rounded-lg shadow mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Recent Fasting Activity</h2>
+        <p class="text-sm text-gray-500 mt-1">Your latest fasting sessions</p>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <% @fasting_stats[:recent_fasts].each do |fast| %>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="p-2 rounded-full <%= fast.completed? ? 'bg-green-100' : fast.broken? ? 'bg-red-100' : 'bg-orange-100' %>">
+                    <% if fast.completed? %>
+                      <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    <% elsif fast.broken? %>
+                      <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    <% else %>
+                      <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-900">
+                    <%= fast.planned_duration_hours.round(1) %>h fast
+                    <span class="text-gray-500">
+                      • <%= fast.start_time.strftime("%b %d, %Y") %>
+                    </span>
+                  </p>
+                  <p class="text-xs text-gray-500">
+                    <% if fast.active? %>
+                      Currently active • <%= fast.duration_text %>
+                    <% else %>
+                      <%= fast.status.capitalize %> • <%= fast.duration_text %>
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+              <div class="flex-shrink-0">
+                <%= link_to fasting_entry_path(fast), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" do %>
+                  View
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="mt-4 text-center">
+          <%= link_to fasting_entries_path, class: "text-blue-600 hover:text-blue-800 text-sm font-medium" do %>
+            View all fasting entries →
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 
   <!-- Weight Progress Chart -->
   <div class="bg-white rounded-lg shadow mb-8">
