@@ -9,6 +9,11 @@ class DashboardController < ApplicationController
     @total_entries = current_user.weight_entries.count
     @weight_trend = calculate_weight_trend
 
+    # Weight logging streak data (habit-building)
+    @weight_logging_streak = current_user.weight_logging_streak
+    @longest_weight_streak = current_user.longest_weight_logging_streak
+    @logged_today = current_user.logged_weight_today?
+
     # Fasting data for dashboard
     @current_fast = current_user.current_fast
     @fasting_stats = calculate_fasting_stats

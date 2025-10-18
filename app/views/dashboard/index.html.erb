@@ -5,6 +5,80 @@
     <p class="text-gray-600">Track your weight journey</p>
   </div>
 
+  <!-- Weight Logging Streak Card (Habit Building) -->
+  <div class="mb-8">
+    <div class="<%= @logged_today ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-orange-500 to-red-600' %> rounded-lg shadow-lg p-6 text-white">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-6">
+          <!-- Current Streak -->
+          <div class="text-center">
+            <div class="text-5xl font-bold mb-1"><%= @weight_logging_streak %></div>
+            <div class="text-sm font-medium uppercase tracking-wide opacity-90">Day Streak 🔥</div>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-16 w-px bg-white opacity-30"></div>
+
+          <!-- Best Streak -->
+          <div class="text-center">
+            <div class="text-3xl font-bold mb-1"><%= @longest_weight_streak %></div>
+            <div class="text-sm font-medium uppercase tracking-wide opacity-90">Best Streak 🏆</div>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-16 w-px bg-white opacity-30"></div>
+
+          <!-- Today's Status -->
+          <div class="flex flex-col items-center">
+            <% if @logged_today %>
+              <svg class="w-12 h-12 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <div class="text-sm font-bold">Logged Today! ✅</div>
+            <% else %>
+              <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div class="text-sm font-bold">Log Your Weight! ⏰</div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="text-right">
+          <% if @weight_logging_streak >= 30 %>
+            <div class="text-2xl font-bold mb-1">🎉 Incredible!</div>
+            <div class="text-sm opacity-90">30+ day champion!</div>
+          <% elsif @weight_logging_streak >= 7 %>
+            <div class="text-2xl font-bold mb-1">🎯 Keep Going!</div>
+            <div class="text-sm opacity-90">One week strong!</div>
+          <% elsif @weight_logging_streak > 0 %>
+            <div class="text-2xl font-bold mb-1">💪 Building Momentum!</div>
+            <div class="text-sm opacity-90">Every day counts!</div>
+          <% else %>
+            <div class="text-2xl font-bold mb-1">🚀 Start Your Streak!</div>
+            <div class="text-sm opacity-90">Log weight to begin</div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Progress to Next Milestone -->
+      <% if @weight_logging_streak > 0 && @weight_logging_streak < 30 %>
+        <% next_milestone = @weight_logging_streak < 7 ? 7 : 30 %>
+        <% progress = (@weight_logging_streak.to_f / next_milestone * 100).round %>
+        <div class="mt-4 pt-4 border-t border-white border-opacity-30">
+          <div class="flex items-center justify-between text-sm mb-2">
+            <span class="opacity-90">Progress to <%= next_milestone %> days</span>
+            <span class="font-bold"><%= @weight_logging_streak %> / <%= next_milestone %></span>
+          </div>
+          <div class="w-full bg-white bg-opacity-30 rounded-full h-2">
+            <div class="bg-white rounded-full h-2 transition-all duration-300" style="width: <%= progress %>%"></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
   <!-- Stats Cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <!-- Current Weight -->

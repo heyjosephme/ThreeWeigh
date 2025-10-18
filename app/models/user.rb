@@ -50,6 +50,73 @@ class User < ApplicationRecord
     streak
   end
 
+  # Weight logging streak methods
+  def weight_logging_streak
+    # Fetch recent dates in one query (optimized)
+    recent_dates = weight_entries
+      .where("date >= ?", 1.year.ago)
+      .order(date: :desc)
+      .pluck(:date)
+
+    return 0 if recent_dates.empty?
+
+    # Calculate consecutive days from today
+    streak = 0
+    current_date = Date.current
+
+    recent_dates.each do |entry_date|
+      break if entry_date != current_date
+      streak += 1
+      current_date -= 1.day
+    end
+
+    streak
+  end
+
+  def longest_weight_logging_streak
+    # Calculate the longest streak in history
+    all_dates = weight_entries.order(:date).pluck(:date)
+    return 0 if all_dates.empty?
+
+    max_streak = 0
+    current_streak = 1
+
+    all_dates.each_cons(2) do |prev_date, curr_date|
+      if (curr_date - prev_date).to_i == 1
+        current_streak += 1
+        max_streak = [max_streak, current_streak].max
+      else
+        current_streak = 1
+      end
+    end
+
+    [max_streak, current_streak].max
+  end
+
+  def weight_logging_heatmap_data(days = 365)
+    # For GitHub-style activity heatmap
+    start_date = days.days.ago.to_date
+
+    # Single query to get all logged dates
+    logged_dates = weight_entries
+      .where("date >= ?", start_date)
+      .pluck(:date)
+      .to_set # Fast O(1) lookups
+
+    # Build heatmap data array
+    (start_date..Date.current).map do |date|
+      {
+        date: date.to_s,
+        logged: logged_dates.include?(date),
+        count: logged_dates.include?(date) ? 1 : 0
+      }
+    end
+  end
+
+  def logged_weight_today?
+    weight_entries.exists?(date: Date.current)
+  end
+
   # Profile completeness
   def profile_complete?
     height.present? && goal_weight.present?
