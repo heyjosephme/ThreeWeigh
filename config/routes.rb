@@ -11,7 +11,11 @@ Rails.application.routes.draw do
       post :start_fast
     end
   end
-  devise_for :users
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    passwords: 'users/passwords'
+  }
 
   # Authenticated user routes (must come before general root)
   authenticated :user do
