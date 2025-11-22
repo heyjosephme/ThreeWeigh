@@ -223,6 +223,11 @@
     </div>
   </div>
 
+  <!-- Weight Logging Activity Heatmap -->
+  <div class="bg-white rounded-lg shadow mb-8 p-6">
+    <%= render WeightHeatmapComponent.new(user: current_user, days: 365) %>
+  </div>
+
   <!-- Recent Fasting Activity -->
   <% if @fasting_stats[:recent_fasts].any? %>
     <div class="bg-white rounded-lg shadow mb-8">
