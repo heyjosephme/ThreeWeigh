@@ -308,8 +308,8 @@
     document.addEventListener('DOMContentLoaded', function() {
       const ctx = document.getElementById('weightChart').getContext('2d');
 
-      const chartData = <%= raw @analytics_data[:chart_data].to_json %>;
-      const trendData = <%= raw @analytics_data[:trend_data].to_json %>;
+      const chartData = <%= @analytics_data[:chart_data].to_json.html_safe %>;
+      const trendData = <%= @analytics_data[:trend_data].to_json.html_safe %>;
 
       new Chart(ctx, {
         type: 'line',
