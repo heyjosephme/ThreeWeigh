@@ -80,11 +80,9 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # TODO: Replace with your actual domain before deploying to production!
   config.hosts = [
-    "threeweigh.com",        # Replace with your production domain
-    "www.threeweigh.com",    # Replace with your www subdomain
-    /.*\.threeweigh\.com/    # Allow any subdomain
+    "threeweigh.heyjoseph.me",
+    /.*\.heyjoseph\.me/    # Allow any subdomain under heyjoseph.me
   ]
 
   # Skip DNS rebinding protection for the default health check endpoint.
